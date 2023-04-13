@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* body {
+  background-image: url("/src/assets/background-image.jpg");
+  min-height: 100vh;
+  background-color: #dff7f3;
+  background-size: cover;
+  background-position: top right;
+  background-blend-mode: multiply;
+} */
+
+#root > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.footer {
+  @apply mt-auto flex justify-around mx-4 my-2 pt-6 pb-12 border-t border-blue-300;
+
+  &-item {
+    &__title {
+      @apply font-bold mb-1;
+    }
+
+    &__text {
+      @apply font-normal text-sm;
+    }
+  }
+
+  &-media {
+    @apply flex;
+
+    &__link {
+      @apply w-6 h-6 mr-3;
+    }
+  }
+}
+
+.header {
+  @apply flex items-center justify-between h-16 bg-black px-3;
+
+  &__link {
+    @apply text-white p-2 bg-slate-400 rounded-lg hover:bg-blue-400 active:bg-red-700 transition-colors;
+  }
+}
+
+.active {
+  @apply bg-red-500 text-white;
+}
+
+.form {
+  @apply border-2 w-3/4 m-auto mt-10 flex flex-col py-4 mb-10 md:py-10 md:max-w-lg;
+
+  &-title {
+    @apply text-center w-full text-4xl leading-normal font-bold text-neutral-600;
+  }
+
+  &-label {
+    @apply flex flex-col md:flex-row items-center justify-center mt-5 md:justify-normal;
+
+    &__text {
+      @apply w-full text-center mb-3 md:w-1/3 md:mb-0 md:mr-2 md:text-right;
+    }
+
+    &__wrapper {
+      @apply relative w-3/4 md:w-1/2;
+    }
+  }
+
+  &-input {
+    @apply w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-indigo-500;
+  }
+
+  &-bottom {
+    @apply flex justify-center mt-10;
+  }
+
+  &-button {
+    @apply bg-blue-500 text-white hover:bg-blue-700 font-bold py-2 px-4 rounded mx-5 active:bg-blue-800;
+  }
+
+  &-error {
+    @apply text-center pt-4 text-red-600 font-bold;
+  }
+
+  &-eye-icon {
+    @apply cursor-pointer hover:opacity-40 active:opacity-100 absolute block right-0 -bottom-6;
+
+    img {
+      @apply w-5;
+    }
+  }
+}
+
+.article {
+  @apply w-4/5 max-w-2xl m-auto bg-slate-100 grow py-2 px-4;
+
+  &-user {
+    @apply flex;
+
+    &__title {
+      @apply text-3xl text-blue-500;
+    }
+
+    &__text {
+      @apply ml-2;
+    }
+
+    &__button {
+      @apply border bg-blue-500 rounded-md py-2 px-4 text-white ml-auto hover:bg-blue-700 active:bg-blue-800;
+    }
+  }
+
+  &-container {
+    @apply h-full;
+  }
+
+  &-item {
+    @apply m-auto mt-4 py-2 px-4 border border-blue-400 rounded-md block bg-white;
+
+    &-info {
+      @apply flex;
+    }
+
+    &__name {
+      @apply mr-2 text-sm text-gray-500;
+    }
+
+    &__date {
+      @apply text-xs text-gray-400;
+    }
+
+    &-content {
+      @apply text-ellipsis overflow-hidden py-2 whitespace-nowrap;
+
+      &__title {
+        @apply font-bold text-ellipsis overflow-hidden;
+        letter-spacing: 0.01em;
+      }
+
+      &__text {
+        @apply text-ellipsis overflow-hidden md:line-clamp-3 md:whitespace-pre-line;
+      }
+    }
+  }
+}
+
+.loading {
+  @apply fixed z-50 top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-70;
+
+  &-svg {
+    @apply w-80 fill-none;
+    animation: spin infinite 1.5s linear;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
