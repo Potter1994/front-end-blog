@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Home from "./pages/Home";
@@ -13,6 +13,7 @@ import {
 } from "./redux/reducers/userSlice";
 import { useAppDispatch } from "./redux/store";
 import { useLocation } from "react-router-dom";
+import ArticlePopup from "./components/ArticlePopup";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -41,7 +42,9 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Home />}>
+          <Route path='article/:id' element={<ArticlePopup />} />
+        </Route>
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
       </Routes>
