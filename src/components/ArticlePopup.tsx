@@ -1,14 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   createSubArticle,
+  deleteArtice,
   getSubArticles,
+  updateArticle,
 } from "../redux/reducers/articleSlice";
 import { selectUser } from "../redux/reducers/userSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import Loading from "./Loading";
 import SubArticle from "./SubArticle";
-// import {  } from '../redux/reducers/articleSlice';
 const formatter = new Intl.DateTimeFormat("zh-TW", {
   year: "numeric",
   month: "2-digit",
@@ -25,8 +26,10 @@ function ArticlePopup() {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const updateArticle = [];
+  const titleRef = useRef<HTMLInputElement>(null);
+  const textRef = useRef<HTMLTextAreaElement>(null);
   const subTextRef = useRef<HTMLTextAreaElement>(null);
+  const [isUpdate, setIsUpdate] = useState(false);
   const id = location.pathname.replace("/article/", "");
   const urlArticleId = Number(location.pathname.replace("/article/", ""));
   const currentArticle = article.articles.find(
@@ -49,7 +52,32 @@ function ArticlePopup() {
     if (article.isLoading) return;
 
     !(e.target as HTMLDivElement).closest(".article-popup__wrapper") &&
-      navigate("/");
+      navigate(`/?page=${article.currentPage}`);
+  };
+
+  const handleDelete = async (id: string) => {
+    const page =
+      article.articles.length <= 1
+        ? article.currentPage - 1
+        : article.currentPage;
+
+    await dispatch(deleteArtice(id, `${page}`, article.sortType));
+    navigate(`/?page=${page}`);
+  };
+
+  const handleUpdate = async () => {
+    const newTitle = titleRef.current?.value!;
+    const newText = textRef.current?.value!;
+
+    if (!newTitle?.trim() || !newText?.trim()) {
+      return;
+    }
+
+    if (currentArticle.title !== newTitle || currentArticle.text !== newText) {
+      dispatch(updateArticle(id, newTitle, newText));
+    }
+
+    setIsUpdate(false);
   };
 
   useEffect(() => {
@@ -62,7 +90,7 @@ function ArticlePopup() {
       <div className='article-popup__wrapper relative'>
         <div
           className='close-icon absolute w-6 top-6 right-6 cursor-pointer hover:opacity-40 active:opacity-100'
-          onClick={() => navigate("/")}>
+          onClick={() => navigate(`/?page=${article.currentPage}`)}>
           <img src='/src/assets/close.svg' />
         </div>
         <div className='article-popup__userinfo'>
@@ -73,10 +101,52 @@ function ArticlePopup() {
             {formatter.format(new Date(currentArticle?.create_time || null))}
           </p>
         </div>
-        <div className='article-popup__container'>
-          <p className='article-popup__title'>{currentArticle?.title}</p>
-          <p className='article-popup__text'>{currentArticle?.text}</p>
-        </div>
+        {user.userInfo?.username === currentArticle?.user?.username &&
+        isUpdate ? (
+          <div className='button-area mb-2'>
+            <button
+              className='article__button button__complete'
+              onClick={handleUpdate}>
+              Complete
+            </button>
+            <button
+              className='article__button button__cancel'
+              onClick={() => setIsUpdate(false)}>
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className='button-area'>
+            <button className='button' onClick={() => setIsUpdate(true)}>
+              Update
+            </button>
+            <button
+              className='button button__delete'
+              onClick={() => handleDelete(currentArticle?.articleId)}>
+              Delete
+            </button>
+          </div>
+        )}
+
+        {isUpdate ? (
+          <div className='article-popup__container'>
+            <input
+              className='default__input'
+              defaultValue={currentArticle?.title}
+              ref={titleRef}
+            />
+            <textarea
+              className='default__textarea'
+              defaultValue={currentArticle?.text}
+              ref={textRef}
+            />
+          </div>
+        ) : (
+          <div className='article-popup__container'>
+            <p className='article-popup__title'>{currentArticle?.title}</p>
+            <p className='article-popup__text'>{currentArticle?.text}</p>
+          </div>
+        )}
         <div className='article-popup-bottom'>
           <div className='article-popup-bottom__wrapper'>
             <i className='article-popup-bottom__svg'>

@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { selectUser } from "../redux/reducers/userSlice";
 import { getArticles } from "../redux/reducers/articleSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { axiosArticle } from "../utils/useAPI";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Loading from "../components/Loading";
 import ArticleItem from "../components/ArticleItem";

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { deleteArtice } from "../redux/reducers/articleSlice";
+import { deleteArtice, updateArticle } from "../redux/reducers/articleSlice";
 const formatter = new Intl.DateTimeFormat("zh-TW", {
   year: "numeric",
   month: "2-digit",
@@ -33,7 +33,7 @@ function ArticleItem({ item, userInfo }: any) {
 
     if (isNeedReturn) return;
 
-    navigate(`/article/${id}`);
+    navigate(`/article/${id}?page=${article.currentPage}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -50,7 +50,19 @@ function ArticleItem({ item, userInfo }: any) {
   };
 
   const handleUpdate = async () => {
-    // console.log()
+    const { articleId } = item;
+    const newTitle = titleRef.current?.value!;
+    const newText = textRef.current?.value!;
+
+    if (!newTitle?.trim() || !newText?.trim()) {
+      return;
+    }
+
+    if (item.title !== newTitle || item.text !== newText) {
+      dispatch(updateArticle(articleId, newTitle, newText));
+    }
+
+    setIsUpdate(false);
   };
 
   return (
@@ -66,7 +78,20 @@ function ArticleItem({ item, userInfo }: any) {
           title={formatter.format(new Date(item.create_time))}>
           {formatter.format(new Date(item.create_time))}
         </p>
-        {item.user.username === username && (
+        {item.user?.username === username && isUpdate ? (
+          <div className='article-button-area'>
+            <button
+              className='article__button button__complete'
+              onClick={handleUpdate}>
+              Complete
+            </button>
+            <button
+              className='article__button button__cancel'
+              onClick={() => setIsUpdate(false)}>
+              Cancel
+            </button>
+          </div>
+        ) : (
           <div className='article-button-area'>
             <button
               className='article__button'
@@ -74,7 +99,7 @@ function ArticleItem({ item, userInfo }: any) {
               Update
             </button>
             <button
-              className='article__button'
+              className='article__button button__cancel'
               onClick={() => handleDelete(item.articleId)}>
               Delete
             </button>

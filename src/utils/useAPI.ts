@@ -51,10 +51,14 @@ export const axiosGetSubArticle = (id: string) => {
   return axiosWithToken.get(`/article/${id}`);
 }
 
-export const axiosGetIdArticle = (id: string) => {
-  return axiosWithToken.get(`/article/${id}`);
+export const axiosGetUpdateIdArticle = (id: string) => {
+  return axiosWithToken.get(`/article/update/${id}`);
 }
 
 export const axiosDeleteArticle = (id: string) => {
   return axiosWithToken.delete('/article', { data: { id } });
+}
+
+export const axiosUpdateArticle = (articleId: string, title: string, text: string) => {
+  return axiosWithToken.put(`/article`, { data: { articleId, title, text } });
 }

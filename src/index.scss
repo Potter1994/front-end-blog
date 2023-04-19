@@ -301,6 +301,15 @@
 
 .button {
   @apply border bg-blue-500 rounded-md py-2 px-4 text-white ml-auto hover:bg-blue-700 active:bg-blue-800;
+
+  &__cancel,
+  &__delete {
+    @apply bg-red-500 hover:bg-red-700 active:bg-red-800;
+  }
+
+  &__complete {
+    @apply bg-green-500 hover:bg-green-700 active:bg-green-800;
+  }
 }
 
 .default-click {
