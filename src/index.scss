@@ -11,6 +11,26 @@
   background-blend-mode: multiply;
 } */
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+
+  background-color: #ebebeb;
+
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: transparent;
+}
+
 #root > div {
   display: flex;
   flex-direction: column;
@@ -96,7 +116,7 @@
 }
 
 .article {
-  @apply w-4/5 max-w-2xl m-auto bg-slate-100 grow py-2 px-4;
+  @apply w-4/5 max-w-2xl m-auto bg-slate-100 grow p-4 my-6;
 
   &-user {
     @apply flex;
@@ -134,19 +154,19 @@
     }
 
     &-content {
-      @apply text-ellipsis overflow-hidden py-2 whitespace-nowrap;
+      @apply text-ellipsis overflow-hidden py-2 whitespace-nowrap md:whitespace-break-spaces  line-clamp-3;
 
       &__title {
-        @apply font-bold text-ellipsis overflow-hidden mb-1;
+        @apply font-bold text-ellipsis overflow-hidden mb-1 whitespace-nowrap;
         letter-spacing: 0.01em;
       }
 
       &__text {
-        @apply text-ellipsis overflow-hidden md:line-clamp-3 md:whitespace-pre-line;
+        @apply text-ellipsis overflow-hidden md:line-clamp-3 md:break-all;
       }
 
       &__content {
-        @apply whitespace-pre;
+        @apply break-all overflow-hidden text-ellipsis md:line-clamp-3;
       }
     }
   }
@@ -172,11 +192,19 @@
 
     &__text {
       @apply text-blue-900 font-mono cursor-default;
+
+      &_pointer {
+        @apply cursor-pointer hover:scale-150 transition-transform;
+      }
     }
   }
 
   &__svg {
     @apply flex w-6 h-6 mx-1 cursor-pointer;
+
+    &_default {
+      @apply cursor-default;
+    }
   }
 
   &-button-area {
@@ -221,7 +249,7 @@
     }
 
     &__text {
-      @apply whitespace-pre;
+      @apply whitespace-pre-line break-all;
     }
 
     &__userinfo {
@@ -243,7 +271,7 @@
     }
 
     &__title {
-      @apply font-bold text-2xl mb-2;
+      @apply font-bold text-2xl mb-2 overflow-hidden text-ellipsis whitespace-nowrap;
     }
 
     &-bottom {
@@ -276,7 +304,7 @@
       }
 
       &__message {
-        @apply text-gray-600 whitespace-pre;
+        @apply text-gray-600 whitespace-pre-line break-all;
       }
 
       &__item {
@@ -286,6 +314,20 @@
       &__date {
         @apply text-xs text-gray-400 ml-2;
       }
+
+      &__name {
+        @apply text-blue-400;
+      }
+    }
+  }
+}
+
+.dialog {
+  &-item {
+    @apply flex flex-col relative z-20 mt-3 items-start;
+
+    &__myself {
+      @apply items-end;
     }
   }
 }
@@ -310,6 +352,14 @@
   &__complete {
     @apply bg-green-500 hover:bg-green-700 active:bg-green-800;
   }
+
+  &__sub {
+    @apply py-1 px-2;
+  }
+
+  &-area-sub {
+    @apply ml-auto lg:ml-2;
+  }
 }
 
 .default-click {
@@ -317,11 +367,9 @@
 }
 
 .default {
-  // @apply flex;
-
   &__input,
   &__textarea {
-    @apply p-2 border border-blue-800 focus:outline-purple-800;
+    @apply p-2 border border-blue-800 focus:outline-purple-800 rounded-md;
   }
 
   &__textarea {

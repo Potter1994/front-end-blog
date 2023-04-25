@@ -1,7 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { deleteArtice, updateArticle } from "../redux/reducers/articleSlice";
+import {
+  deleteArtice,
+  setCurrentThumb,
+  updateArticle,
+  updateThumb,
+} from "../redux/reducers/articleSlice";
+import ThumbList from "./ThumbList";
 const formatter = new Intl.DateTimeFormat("zh-TW", {
   year: "numeric",
   month: "2-digit",
@@ -13,13 +19,14 @@ const formatter = new Intl.DateTimeFormat("zh-TW", {
 });
 
 function ArticleItem({ item, userInfo }: any) {
+  const [isUpdate, setIsUpdate] = useState(false);
   const { username } = userInfo || { username: null };
   const article = useAppSelector((state) => state.article);
-  const [isUpdate, setIsUpdate] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const titleRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const { articleId } = item;
 
   const handleClick = (e: React.MouseEvent<EventTarget>, id: number) => {
     if (isUpdate) {
@@ -50,7 +57,6 @@ function ArticleItem({ item, userInfo }: any) {
   };
 
   const handleUpdate = async () => {
-    const { articleId } = item;
     const newTitle = titleRef.current?.value!;
     const newText = textRef.current?.value!;
 
@@ -63,6 +69,17 @@ function ArticleItem({ item, userInfo }: any) {
     }
 
     setIsUpdate(false);
+  };
+
+  const handleToggleThumb = async () => {
+    dispatch(updateThumb(articleId, username));
+  };
+
+  const clickThumbList = () => {
+    const currentThumb =
+      article.currentThumb === item.articleId ? null : item.articleId;
+
+    dispatch(setCurrentThumb(Number(currentThumb)));
   };
 
   return (
@@ -78,32 +95,36 @@ function ArticleItem({ item, userInfo }: any) {
           title={formatter.format(new Date(item.create_time))}>
           {formatter.format(new Date(item.create_time))}
         </p>
-        {item.user?.username === username && isUpdate ? (
-          <div className='article-button-area'>
-            <button
-              className='article__button button__complete'
-              onClick={handleUpdate}>
-              Complete
-            </button>
-            <button
-              className='article__button button__cancel'
-              onClick={() => setIsUpdate(false)}>
-              Cancel
-            </button>
-          </div>
+        {item.user?.username === username ? (
+          isUpdate ? (
+            <div className='article-button-area'>
+              <button
+                className='article__button button__complete'
+                onClick={handleUpdate}>
+                Complete
+              </button>
+              <button
+                className='article__button button__cancel'
+                onClick={() => setIsUpdate(false)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className='article-button-area'>
+              <button
+                className='article__button'
+                onClick={() => setIsUpdate((prev) => !prev)}>
+                Update
+              </button>
+              <button
+                className='article__button button__cancel'
+                onClick={() => handleDelete(item.articleId)}>
+                Delete
+              </button>
+            </div>
+          )
         ) : (
-          <div className='article-button-area'>
-            <button
-              className='article__button'
-              onClick={() => setIsUpdate((prev) => !prev)}>
-              Update
-            </button>
-            <button
-              className='article__button button__cancel'
-              onClick={() => handleDelete(item.articleId)}>
-              Delete
-            </button>
-          </div>
+          <></>
         )}
       </div>
 
@@ -121,23 +142,36 @@ function ArticleItem({ item, userInfo }: any) {
         </div>
       ) : (
         <div className='article-item-content'>
-          <p className='article-item-content__title'>{item.title}</p>
-          <p className='article-item-content__content'>{item.text}</p>
+          <p className='article-item-content__title' title={item.title}>
+            {item.title}
+          </p>
+          <p className='article-item-content__content' title={item.text}>
+            {item.text}
+          </p>
         </div>
       )}
 
-      <div className='article-info'>
+      <div className='article-info relative'>
         <div className='article-info__wrapper'>
-          <i className='article__svg'>
-            <img src='/src/assets/thumb-up.svg' />
+          <i className='article__svg' onClick={handleToggleThumb}>
+            <img
+              src={`/src/assets/thumb-up${
+                item.like.includes(username) ? "-clicked" : ""
+              }.svg`}
+            />
           </i>
-          <p className='article-info__text'>{item.like.length}</p>
+          <p
+            className='article-info__text article-info__text_pointer'
+            onClick={clickThumbList}>
+            {item.like.length}
+          </p>
+          {article.currentThumb === item.articleId && <ThumbList item={item} />}
         </div>
         <div className='article-info__wrapper'>
-          <i className='article__svg'>
+          <i className='article__svg article__svg_default'>
             <img src='/src/assets/message.svg' />
           </i>
-          <p className='article-info__text'>{item.comment}</p>
+          <p className='article-info__text cursor-pointer'>{item.comment}</p>
         </div>
       </div>
     </div>

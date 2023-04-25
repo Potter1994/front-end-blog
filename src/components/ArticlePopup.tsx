@@ -5,6 +5,7 @@ import {
   deleteArtice,
   getSubArticles,
   updateArticle,
+  updateThumb,
 } from "../redux/reducers/articleSlice";
 import { selectUser } from "../redux/reducers/userSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -80,6 +81,10 @@ function ArticlePopup() {
     setIsUpdate(false);
   };
 
+  const handleToggleThumb = () => {
+    dispatch(updateThumb(`${urlArticleId}`, user.userInfo?.username || ""));
+  };
+
   useEffect(() => {
     dispatch(getSubArticles(id));
   }, []);
@@ -101,31 +106,34 @@ function ArticlePopup() {
             {formatter.format(new Date(currentArticle?.create_time || null))}
           </p>
         </div>
-        {user.userInfo?.username === currentArticle?.user?.username &&
-        isUpdate ? (
-          <div className='button-area mb-2'>
-            <button
-              className='article__button button__complete'
-              onClick={handleUpdate}>
-              Complete
-            </button>
-            <button
-              className='article__button button__cancel'
-              onClick={() => setIsUpdate(false)}>
-              Cancel
-            </button>
-          </div>
+        {user.userInfo?.username === currentArticle?.user?.username ? (
+          isUpdate ? (
+            <div className='button-area mb-2'>
+              <button
+                className='article__button button__complete'
+                onClick={handleUpdate}>
+                Complete
+              </button>
+              <button
+                className='article__button button__cancel'
+                onClick={() => setIsUpdate(false)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className='button-area'>
+              <button className='button' onClick={() => setIsUpdate(true)}>
+                Update
+              </button>
+              <button
+                className='button button__delete'
+                onClick={() => handleDelete(currentArticle?.articleId)}>
+                Delete
+              </button>
+            </div>
+          )
         ) : (
-          <div className='button-area'>
-            <button className='button' onClick={() => setIsUpdate(true)}>
-              Update
-            </button>
-            <button
-              className='button button__delete'
-              onClick={() => handleDelete(currentArticle?.articleId)}>
-              Delete
-            </button>
-          </div>
+          <></>
         )}
 
         {isUpdate ? (
@@ -143,14 +151,26 @@ function ArticlePopup() {
           </div>
         ) : (
           <div className='article-popup__container'>
-            <p className='article-popup__title'>{currentArticle?.title}</p>
-            <p className='article-popup__text'>{currentArticle?.text}</p>
+            <p className='article-popup__title' title={currentArticle?.title}>
+              {currentArticle?.title}
+            </p>
+            <p className='article-popup__text' title={currentArticle?.text}>
+              {currentArticle?.text}
+            </p>
           </div>
         )}
         <div className='article-popup-bottom'>
           <div className='article-popup-bottom__wrapper'>
-            <i className='article-popup-bottom__svg'>
-              <img src='/src/assets/thumb-up.svg' />
+            <i
+              className='article-popup-bottom__svg'
+              onClick={handleToggleThumb}>
+              <img
+                src={`/src/assets/thumb-up${
+                  currentArticle.like.includes(user.userInfo?.username)
+                    ? "-clicked"
+                    : ""
+                }.svg`}
+              />
             </i>
             <p className='article-popup-bottom__text'>
               {currentArticle?.like?.length || 0}

@@ -19,7 +19,7 @@ function Register() {
 
   const handleSubmit = (e: React.FormEvent<EventTarget>) => {
     e.preventDefault();
-    const username = usernameRef.current!.value;
+    const username = usernameRef.current!.value?.trim();
     const password = passwordRef.current!.value;
     const confirm = confirmRef.current!.value;
 

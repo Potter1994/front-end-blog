@@ -1,22 +1,51 @@
 import axios from 'axios';
 
-export const axiosWithToken = axios.create({
-  baseURL: 'http://localhost:3000',
+const baseURL = 'http://localhost:3000';
+
+export const axiosWithUserToken = axios.create({
+  baseURL
 });
 
-export const axiosSetConfig = () => axiosWithToken.interceptors.request.use((config) => {
-  const token = JSON.parse(localStorage.getItem('potterSiteUserInfo') || "null")?.token;
+export const axiosWithChatToken = axios.create({
+  baseURL
+})
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+export const axiosSetUserConfig = () => axiosWithUserToken.interceptors.request.use((config: any) => {
+  try {
+    const token = JSON.parse(localStorage.getItem('potterSiteUserInfo') || "null")?.token;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config;
+  } catch (err) {
+    localStorage.removeItem('potterSiteUserInfo');
+
+    return config;
   }
-  return config;
 });
 
-axiosSetConfig();
+export const axiosSetChatConfig = () => axiosWithChatToken.interceptors.request.use((config) => {
+  try {
+    const token = JSON.parse(localStorage.getItem('potterSiteChatInfo') || "null")?.token;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config;
+  } catch (err) {
+    localStorage.removeItem('potterSiteChatInfo');
+
+    return config;
+  }
+});
+
+axiosSetUserConfig();
+axiosSetChatConfig();
 
 export const fetchRegister = (username: string, password: string) => {
-  return fetch('http://localhost:3000/users/', {
+  return fetch(`${baseURL}/users/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,7 +55,7 @@ export const fetchRegister = (username: string, password: string) => {
 }
 
 export const fetchLogin = (username: string, password: string) => {
-  return fetch('http://localhost:3000/users/login', {
+  return fetch(`${baseURL}/users/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -36,29 +65,49 @@ export const fetchLogin = (username: string, password: string) => {
 }
 
 export const axiosCreateArticle = (title: string, text: string) => {
-  return axiosWithToken.post('/article', { title, text }, { headers: { 'Content-Type': 'application/json' } });
+  return axiosWithUserToken.post('/article', { title, text }, { headers: { 'Content-Type': 'application/json' } });
 }
 
 export const axiosCreateSubArticle = (text: string, id: string) => {
-  return axiosWithToken.post(`/article/${id}`, { text }, { headers: { 'Content-Type': 'application/json' } });
+  return axiosWithUserToken.post(`/article/${id}`, { text }, { headers: { 'Content-Type': 'application/json' } });
 }
 
 export const axiosArticle = (page: string, sort: string) => {
-  return axiosWithToken.get(`/article?page=${page}&sort=${sort}`);
+  return axiosWithUserToken.get(`/article?page=${page}&sort=${sort}`);
 }
 
 export const axiosGetSubArticle = (id: string) => {
-  return axiosWithToken.get(`/article/${id}`);
+  return axiosWithUserToken.get(`/article/${id}`);
 }
 
 export const axiosGetUpdateIdArticle = (id: string) => {
-  return axiosWithToken.get(`/article/update/${id}`);
+  return axiosWithUserToken.get(`/article/update/${id}`);
 }
 
 export const axiosDeleteArticle = (id: string) => {
-  return axiosWithToken.delete('/article', { data: { id } });
+  return axiosWithUserToken.delete('/article', { data: { id } });
 }
 
 export const axiosUpdateArticle = (articleId: string, title: string, text: string) => {
-  return axiosWithToken.put(`/article`, { data: { articleId, title, text } });
+  return axiosWithUserToken.put(`/article`, { articleId, title, text });
+}
+
+export const axiosUpdateSubArticle = (articleId: string, text: string) => {
+  return axiosWithUserToken.put(`/article/update/${articleId}`, { text });
+}
+
+export const axiosThumbArticle = (articleId: string, username: string) => {
+  return axiosWithUserToken.post(`/thumb`, { articleId, username });
+}
+
+export const axiosGetChatroom = (chatuser: string[]) => {
+  const queryString = chatuser.reduce((prev, curr) => prev += `chatuser[]=${curr}&`, '').replace(/.$/, '');
+  return axiosWithChatToken.get(`/chatroom?${queryString}`);
+}
+
+export const axiosGetMessage = (token: string) => {
+  return axiosWithChatToken.get('/chatroom/message');
+}
+export const axiosPostMessage = (username: string, content: string) => {
+  return axiosWithChatToken.post('/chatroom/message', { username, content });
 }

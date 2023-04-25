@@ -1,4 +1,4 @@
-import { fetchRegister, fetchLogin, axiosSetConfig } from './../../utils/useAPI';
+import { fetchRegister, fetchLogin, axiosSetUserConfig } from './../../utils/useAPI';
 import { createSlice } from '@reduxjs/toolkit';
 import type { AppDispatch, RootState } from '../store';
 import { NavigateFunction } from 'react-router-dom';
@@ -51,13 +51,13 @@ export const createUser = (navigate: NavigateFunction, username: string, passwor
     }
 
     localStorage.setItem('potterSiteUserInfo', JSON.stringify(result.user));
-    axiosSetConfig();
+    axiosSetUserConfig();
     dispatch(setUserIsLogin(true));
     dispatch(setUserInfo(result.user))
     navigate('/');
   } catch (err) {
     dispatch(setErrorMessage('Server Error'))
-    axiosSetConfig();
+    axiosSetUserConfig();
     dispatch(setIsLoading(false));
     dispatch(setUserIsLogin(false));
     dispatch(setUserInfo(null));
@@ -71,7 +71,7 @@ export const loginUser = (navigate: NavigateFunction, username: string, password
 
   try {
     const result = await fetchLogin(username, password);
-    axiosSetConfig();
+    axiosSetUserConfig();
     dispatch(setIsLoading(false));
 
 
@@ -84,7 +84,7 @@ export const loginUser = (navigate: NavigateFunction, username: string, password
     dispatch(setUserInfo(result.user));
     navigate('/');
   } catch (err) {
-    axiosSetConfig();
+    axiosSetUserConfig();
     dispatch(setErrorMessage('Server Error'))
     dispatch(setIsLoading(false));
     dispatch(setUserIsLogin(false));
@@ -95,7 +95,7 @@ export const loginUser = (navigate: NavigateFunction, username: string, password
 
 export const logoutUser = () => async (dispatch: AppDispatch) => {
   localStorage.removeItem("potterSiteUserInfo");
-  axiosSetConfig();
+  axiosSetUserConfig();
   dispatch(setErrorMessage(''));
   dispatch(setIsLoading(false));
   dispatch(setUserInfo(null));
