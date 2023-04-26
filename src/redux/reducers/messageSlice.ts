@@ -1,6 +1,7 @@
 import { axiosGetChatroom, axiosSetChatConfig, axiosGetMessage, axiosPostMessage } from './../../utils/useAPI';
 import { createSlice } from '@reduxjs/toolkit';
 import { AppDispatch, store } from '../store';
+import { socket } from '../../socket';
 
 enum uploadStatus {
   fail = 0,
@@ -9,6 +10,7 @@ enum uploadStatus {
 }
 
 type Message = {
+  _id: string,
   username: string,
   content: string,
   timestamp: Date,
@@ -79,7 +81,8 @@ export const getChatroom = (chatuser: string[]) => async (dispatch: AppDispatch)
 
 export const createChatMessage = (username: string, content: string) => async (dispatch: AppDispatch) => {
   const id = new Date().getTime();
-  const newMessage = { username, content, timestamp: id, message_id: id, upload: 2 };
+  const newMessage = { username, content, timestamp: id, message_id: id, _id: id, upload: 2 };
+  socket.emit("chatMessage", JSON.stringify(newMessage));
 
   try {
     const messageArray = store.getState().message.currentMessage;

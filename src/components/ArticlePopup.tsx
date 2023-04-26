@@ -4,6 +4,7 @@ import {
   createSubArticle,
   deleteArtice,
   getSubArticles,
+  setCurrentPopupThumb,
   updateArticle,
   updateThumb,
 } from "../redux/reducers/articleSlice";
@@ -11,6 +12,7 @@ import { selectUser } from "../redux/reducers/userSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import Loading from "./Loading";
 import SubArticle from "./SubArticle";
+import ThumbList from "./ThumbList";
 const formatter = new Intl.DateTimeFormat("zh-TW", {
   year: "numeric",
   month: "2-digit",
@@ -160,19 +162,29 @@ function ArticlePopup() {
           </div>
         )}
         <div className='article-popup-bottom'>
-          <div className='article-popup-bottom__wrapper'>
+          <div className='article-popup-bottom__wrapper relative'>
             <i
               className='article-popup-bottom__svg'
               onClick={handleToggleThumb}>
               <img
                 src={`/src/assets/thumb-up${
-                  currentArticle.like.includes(user.userInfo?.username)
+                  currentArticle?.like?.includes(user.userInfo?.username)
                     ? "-clicked"
                     : ""
                 }.svg`}
               />
             </i>
-            <p className='article-popup-bottom__text'>
+            {currentArticle &&
+              currentArticle.articleId === article.currentPopupThumb && (
+                <div className='absolute bottom-0 translate-y-48'>
+                  <ThumbList item={currentArticle} />
+                </div>
+              )}
+            <p
+              className='article-popup-bottom__text cursor-pointer'
+              onClick={() =>
+                dispatch(setCurrentPopupThumb(currentArticle.articleId))
+              }>
               {currentArticle?.like?.length || 0}
             </p>
             <i className='article-popup-bottom__svg'>

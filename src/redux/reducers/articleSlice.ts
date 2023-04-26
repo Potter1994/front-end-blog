@@ -11,6 +11,7 @@ const initialState = {
   sortType: 'desc',
   subArticles: [] as any[],
   currentThumb: null as (number | null),
+  currentPopupThumb: null as (number | null)
 }
 
 const articleSlice = createSlice({
@@ -25,11 +26,12 @@ const articleSlice = createSlice({
     setTotalPage: (state, action: { payload: number }) => ({ ...state, totalPage: action.payload }),
     setSortType: (state, action: { payload: string }) => ({ ...state, sortType: action.payload }),
     setSubArticles: (state, action) => ({ ...state, subArticles: action.payload }),
-    setCurrentThumb: (state, action) => ({ ...state, currentThumb: action.payload })
+    setCurrentThumb: (state, action) => ({ ...state, currentThumb: action.payload }),
+    setCurrentPopupThumb: (state, action) => ({ ...state, currentPopupThumb: action.payload }),
   }
 });
 
-export const { setIsLoading, setArticles, setCurrentPage, setTotalPage, setSortType, setSubArticles, setCurrentThumb } = articleSlice.actions;
+export const { setIsLoading, setArticles, setCurrentPage, setTotalPage, setSortType, setSubArticles, setCurrentThumb, setCurrentPopupThumb } = articleSlice.actions;
 export default articleSlice.reducer;
 
 export const getArticles = (page: string, sort: string) => async (dispatch: AppDispatch) => {

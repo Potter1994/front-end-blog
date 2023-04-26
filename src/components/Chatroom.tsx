@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   createChatMessage,
   getChatroom,
@@ -7,6 +7,8 @@ import {
 } from "../redux/reducers/messageSlice";
 import { selectUser } from "../redux/reducers/userSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import { socket } from "../socket";
+
 const formatter = new Intl.DateTimeFormat("zh-TW", {
   hour: "2-digit",
   minute: "2-digit",
@@ -14,6 +16,8 @@ const formatter = new Intl.DateTimeFormat("zh-TW", {
 });
 
 function Chatroom() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState<any[]>([]);
   const message = useAppSelector((state) => state.message);
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
@@ -31,6 +35,21 @@ function Chatroom() {
   function closeIsExpand(e: MouseEvent) {
     if (!chatroomComponentRef.current?.contains(e.target as HTMLDivElement)) {
       setIsExpand(false);
+    }
+  }
+
+  // const onChatMessage = useCallback(
+  //   (value: any) => onChatMessageFn(value),
+  //   [message.currentMessage]
+  // );
+
+  function onChatMessage(value: any) {
+    const newMessage = JSON.parse(value);
+
+    if (user.userInfo?.username !== newMessage.username) {
+      dispatch(
+        setCurrentMessage([...message.currentMessage, { ...newMessage }])
+      );
     }
   }
 
@@ -53,16 +72,18 @@ function Chatroom() {
   }
 
   useEffect(() => {
-    dispatch(getChatroom(message.chatuser));
+    if (message.chatuser.length > 1) {
+      dispatch(getChatroom(message.chatuser));
+    }
   }, []);
 
   useEffect(() => {
-    if (isExpand) {
-      setTimeout(() => {
-        dialogRef.current?.scrollTo(0, dialogRef.current?.scrollHeight);
-      }, 0);
-    }
-  }, [isExpand]);
+    socket.on("chatMessage", onChatMessage);
+
+    return () => {
+      socket.off("chatMessage", onChatMessage);
+    };
+  }, [message.currentMessage]);
 
   useEffect(() => {
     if (isExpand) {
@@ -70,7 +91,7 @@ function Chatroom() {
         dialogRef.current?.scrollTo(0, dialogRef.current?.scrollHeight);
       }, 0);
     }
-  }, [message.currentMessage]);
+  }, [isExpand, message.currentMessage]);
 
   return (
     <div
@@ -103,7 +124,7 @@ function Chatroom() {
           {message.currentMessage.map((item) => {
             return item.username !== message.username ? (
               <div
-                key={item.message_id}
+                key={`${item._id}`}
                 className='dialog-item dialog-item__myself'>
                 <p className={rightChatStyle}>
                   <span className='absolute -left-8 bottom-1 text-xs text-gray-500'>
@@ -127,7 +148,7 @@ function Chatroom() {
                 </p>
               </div>
             ) : (
-              <div key={item.message_id} className='dialog-item'>
+              <div key={item._id} className='dialog-item'>
                 <div className={leftChatTriangle}></div>
                 <p className={leftChatStyle}>
                   <span className='absolute -right-8 bottom-1 text-xs text-gray-500'>

@@ -30,7 +30,6 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("effet");
     try {
       const userInfo = JSON.parse(
         localStorage.getItem("potterSiteUserInfo") as string

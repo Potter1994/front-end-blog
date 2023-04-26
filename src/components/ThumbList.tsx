@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { setCurrentThumb } from "../redux/reducers/articleSlice";
+import {
+  setCurrentPopupThumb,
+  setCurrentThumb,
+} from "../redux/reducers/articleSlice";
 import { selectUser } from "../redux/reducers/userSlice";
 import {
   getChatroom,
@@ -18,7 +21,8 @@ function ThumbList({ item }: any) {
       thumbListRef!.current &&
       !thumbListRef.current.contains(e.target as HTMLDivElement)
     ) {
-      dispatch(setCurrentThumb(false));
+      dispatch(setCurrentThumb(null));
+      dispatch(setCurrentPopupThumb(null));
     }
   };
 
