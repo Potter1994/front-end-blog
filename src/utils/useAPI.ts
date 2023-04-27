@@ -100,6 +100,21 @@ export const axiosThumbArticle = (articleId: string, username: string) => {
   return axiosWithUserToken.post(`/thumb`, { articleId, username });
 }
 
+export type NotificationType = {
+  username: String,
+  chatuser: String,
+  content: String,
+  timestamp: Date,
+}
+
+export const axiosGetNotification = () => {
+  return axiosWithUserToken.get<NotificationType[]>('/notification');
+}
+
+export const axiosPostNotification = () => {
+  return axiosWithUserToken.post('/notification');
+}
+
 export const axiosGetChatroom = (chatuser: string[]) => {
   const queryString = chatuser.reduce((prev, curr) => prev += `chatuser[]=${curr}&`, '').replace(/.$/, '');
   return axiosWithChatToken.get(`/chatroom?${queryString}`);

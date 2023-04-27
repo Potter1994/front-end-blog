@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -22,11 +22,13 @@ import {
   setToken,
   setUsername,
 } from "./redux/reducers/messageSlice";
+import { getNotificationAxios } from "./redux/reducers/notificationSlice";
 
 function App() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const message = useAppSelector((state) => state.message);
+  const notification = useAppSelector((state) => state.notification);
   const location = useLocation();
 
   useEffect(() => {
@@ -61,6 +63,10 @@ function App() {
   useEffect(() => {
     dispatch(setErrorMessage(""));
   }, [location.pathname]);
+
+  useEffect(() => {
+    dispatch(getNotificationAxios());
+  }, [dispatch]);
 
   return (
     <div>
