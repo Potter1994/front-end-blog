@@ -366,6 +366,13 @@
   cursor: default;
 }
 
+.notification {
+  &__user {
+    width: fit-content;
+    max-width: 4.8rem;
+  }
+}
+
 .default {
   &__input,
   &__textarea {

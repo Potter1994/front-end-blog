@@ -12,6 +12,7 @@ enum uploadStatus {
 type Message = {
   _id: string,
   username: string,
+  chatuser: string,
   content: string,
   timestamp: Date,
   message_id: number,
@@ -79,9 +80,9 @@ export const getChatroom = (chatuser: string[]) => async (dispatch: AppDispatch)
 // message_id: number,
 // upload: uploadStatus,
 
-export const createChatMessage = (username: string, content: string) => async (dispatch: AppDispatch) => {
+export const createChatMessage = (username: string, chatuser: string, content: string) => async (dispatch: AppDispatch) => {
   const id = new Date().getTime();
-  const newMessage = { username, content, timestamp: id, message_id: id, _id: id, upload: 2 };
+  const newMessage = { username, chatuser, content, timestamp: id, message_id: id, _id: id, upload: 2 };
   socket.emit("chatMessage", JSON.stringify(newMessage));
 
   try {
@@ -95,6 +96,5 @@ export const createChatMessage = (username: string, content: string) => async (d
       dispatch(setCurrentMessage([...messageArray, { ...newMessage, upload: 0 }]));
     }
   } catch (err) {
-    console.log(err);
   }
 }

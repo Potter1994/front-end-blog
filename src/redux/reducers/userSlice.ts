@@ -62,6 +62,7 @@ export const createUser = (navigate: NavigateFunction, username: string, passwor
     dispatch(setUserIsLogin(false));
     dispatch(setUserInfo(null));
     localStorage.removeItem('potterSiteUserInfo');
+    localStorage.removeItem('potterSiteChatInfo');
   }
 }
 
@@ -90,6 +91,7 @@ export const loginUser = (navigate: NavigateFunction, username: string, password
     dispatch(setUserIsLogin(false));
     dispatch(setUserInfo(null));
     localStorage.removeItem('potterSiteUserInfo');
+    localStorage.removeItem('potterSiteChatInfo');
   }
 }
 

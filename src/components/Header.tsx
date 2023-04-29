@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { selectUser, logoutUser } from "../redux/reducers/userSlice";
 import { setIsOpen } from "../redux/reducers/notificationSlice";
+import { getNotificationAction } from "../redux/sagas/action";
 import NotificationList from "./NotificationList";
 
 function Header() {
@@ -16,7 +17,7 @@ function Header() {
   };
 
   useEffect(() => {
-    console.log(notification);
+    dispatch(getNotificationAction());
   }, []);
 
   const guestHeader = (
@@ -34,9 +35,12 @@ function Header() {
     <nav className='header-right flex items-center'>
       <div
         onClick={() => dispatch(setIsOpen(!notification.isOpen))}
-        className='w-10 h-10 bg-white flex mr-4 cursor-pointer rounded-full hover:bg-blue-300 relative'>
-        <img className='w-full' src='/src/assets/bell.svg' />
+        className='notification-button w-10 h-10 bg-white flex mr-4 cursor-pointer rounded-full hover:bg-blue-300 relative justify-center'>
+        <img className='w-8' src={`/src/assets/bell.svg`} />
         {notification?.isOpen && <NotificationList />}
+        {notification.hasNew && (
+          <div className='bg-red-500 absolute w-4 h-4 rounded-full right-0'></div>
+        )}
       </div>
       <NavLink
         to='/logout'

@@ -45,7 +45,6 @@ export const getArticles = (page: string, sort: string) => async (dispatch: AppD
     dispatch(setSortType(sort));
     dispatch(setIsLoading(false));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -58,7 +57,6 @@ export const getSubArticles = (id: string) => async (dispatch: AppDispatch) => {
     dispatch(setSubArticles(result))
     dispatch(setIsLoading(false));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -70,7 +68,6 @@ export const deleteArtice = (id: string, page: string, sort: string) => async (d
     const result = await axiosDeleteArticle(id);
     const test = await dispatch(getArticles(page, sort));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -86,7 +83,6 @@ export const deleteSubArtice = (id: string, mainId: string) => async (dispatch: 
     await dispatch(getSubArticles(mainId));
     await dispatch(setArticles(changeCommentMainArticle));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -100,7 +96,6 @@ export const createArticle = (title: string, text: string) => async (dispatch: A
 
     dispatch(setIsLoading(false));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -114,7 +109,6 @@ export const createSubArticle = (text: string, id: string) => async (dispatch: A
     await Promise.all([dispatch(getSubArticles(id)), dispatch(getArticles(`${currentPage}`, sortType))]);
     dispatch(setIsLoading(false));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -136,7 +130,6 @@ export const updateArticle = (articleId: string, title: string, text: string) =>
 
     dispatch(setIsLoading(false));
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false));
   }
 }
@@ -159,7 +152,6 @@ export const updateSubArticle = (articleId: string, text: string) => async (disp
 
     dispatch(setIsLoading(false))
   } catch (err) {
-    console.log(err);
     dispatch(setIsLoading(false))
   }
 }
@@ -189,6 +181,5 @@ export const updateThumb = (articleId: string, username: string) => async (dispa
       dispatch(setArticles(articles));
     }
   } catch (err) {
-    console.log(err);
   }
 }

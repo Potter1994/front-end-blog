@@ -107,12 +107,18 @@ export type NotificationType = {
   timestamp: Date,
 }
 
+type NotificaionList = {
+  username: string,
+  chatuser: string,
+  content: string,
+}
+
 export const axiosGetNotification = () => {
   return axiosWithUserToken.get<NotificationType[]>('/notification');
 }
 
-export const axiosPostNotification = () => {
-  return axiosWithUserToken.post('/notification');
+export const axiosPostNotification = ({ username, chatuser, content }: NotificaionList) => {
+  return axiosWithUserToken.post('/notification', { username, chatuser, content });
 }
 
 export const axiosGetChatroom = (chatuser: string[]) => {

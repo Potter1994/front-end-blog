@@ -21,13 +21,16 @@ function Login() {
     const password = passwordRef.current!.value;
 
     if (!username || !password) {
-      console.log(user);
       return dispatch(setErrorMessage("請輸入完整資料"));
     }
 
-    // if (password.length < 6) {
-    //   return dispatch(setErrorMessage("密碼小於 6 碼"));
-    // }
+    if (password.length < 6) {
+      return dispatch(setErrorMessage("密碼小於 6 碼"));
+    }
+
+    if (password.length > 12) {
+      return dispatch(setErrorMessage("密碼長度最高為 12 碼"));
+    }
 
     dispatch(loginUser(navigate, username, password));
   };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -16,13 +16,12 @@ import { useAppDispatch, useAppSelector } from "./redux/store";
 import { useLocation } from "react-router-dom";
 import ArticlePopup from "./components/ArticlePopup";
 import Chatroom from "./components/Chatroom";
-import { axiosGetChatroom } from "./utils/useAPI";
 import {
   setChatuser,
   setToken,
   setUsername,
 } from "./redux/reducers/messageSlice";
-import { getNotificationAxios } from "./redux/reducers/notificationSlice";
+import {} from "./redux/sagas/action";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -63,10 +62,6 @@ function App() {
   useEffect(() => {
     dispatch(setErrorMessage(""));
   }, [location.pathname]);
-
-  useEffect(() => {
-    dispatch(getNotificationAxios());
-  }, [dispatch]);
 
   return (
     <div>

@@ -8,6 +8,11 @@ import {
   updateArticle,
   updateThumb,
 } from "../redux/reducers/articleSlice";
+import {
+  getChatroom,
+  setCurrentMessage,
+  setUsername,
+} from "../redux/reducers/messageSlice";
 import { selectUser } from "../redux/reducers/userSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import Loading from "./Loading";
@@ -35,6 +40,7 @@ function ArticlePopup() {
   const [isUpdate, setIsUpdate] = useState(false);
   const id = location.pathname.replace("/article/", "");
   const urlArticleId = Number(location.pathname.replace("/article/", ""));
+  console.log(urlArticleId);
   const currentArticle = article.articles.find(
     (i) => i.articleId === urlArticleId
   );
@@ -87,6 +93,16 @@ function ArticlePopup() {
     dispatch(updateThumb(`${urlArticleId}`, user.userInfo?.username || ""));
   };
 
+  const handleGetChatroom = async (chatname: string) => {
+    const myName = user.userInfo?.username!;
+
+    if (myName !== chatname) {
+      dispatch(setUsername(chatname));
+      dispatch(setCurrentMessage([]));
+      dispatch(getChatroom([myName, chatname]));
+    }
+  };
+
   useEffect(() => {
     dispatch(getSubArticles(id));
   }, []);
@@ -101,7 +117,9 @@ function ArticlePopup() {
           <img src='/src/assets/close.svg' />
         </div>
         <div className='article-popup__userinfo'>
-          <p className='article-popup__name'>
+          <p
+            className='article-popup__name cursor-pointer'
+            onClick={() => handleGetChatroom(currentArticle?.user?.username)}>
             {currentArticle?.user?.username}
           </p>
           <p className='article-popup__date'>

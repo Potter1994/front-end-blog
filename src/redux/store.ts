@@ -6,11 +6,9 @@ import articleReducer from "./reducers/articleSlice";
 import messageReducer from './reducers/messageSlice'
 import notificationReducer from './reducers/notificationSlice'
 import createSagaMiddleware from 'redux-saga';
-import notificationSaga from "./sagas/saga";
+import rootSaga from "./sagas/saga";
 
 const sagaMiddleware = createSagaMiddleware();
-// let sagaMiddleware = createSagaMiddleware();
-// const middleware = [...getDefaultMiddleware(), sagaMiddleware];
 const middleware = (getDefaultMiddleware: any) => getDefaultMiddleware().concat(sagaMiddleware);
 
 export const store = configureStore({
@@ -20,7 +18,7 @@ export const store = configureStore({
 // const dispatch: Dispatch
 // <AnyAction>(action: AnyAction) => AnyAction
 
-sagaMiddleware.run(notificationSaga);
+sagaMiddleware.run(rootSaga);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch & ThunkDispatch<RootState, unknown, Action<string>>;

@@ -6,8 +6,15 @@ import {
   setReset,
 } from "../redux/reducers/messageSlice";
 import { selectUser } from "../redux/reducers/userSlice";
+import { updateNotificationAction } from "../redux/sagas/action";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { socket } from "../socket";
+
+const dateFormatter = new Intl.DateTimeFormat("zh-TW", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
 const formatter = new Intl.DateTimeFormat("zh-TW", {
   hour: "2-digit",
@@ -38,15 +45,13 @@ function Chatroom() {
     }
   }
 
-  // const onChatMessage = useCallback(
-  //   (value: any) => onChatMessageFn(value),
-  //   [message.currentMessage]
-  // );
-
   function onChatMessage(value: any) {
     const newMessage = JSON.parse(value);
 
-    if (user.userInfo?.username !== newMessage.username) {
+    if (
+      user.userInfo?.username === newMessage.chatuser &&
+      message.username === newMessage.username
+    ) {
       dispatch(
         setCurrentMessage([...message.currentMessage, { ...newMessage }])
       );
@@ -61,7 +66,13 @@ function Chatroom() {
         const content = textRef.current?.value.trim();
 
         if (content) {
-          dispatch(createChatMessage(user.userInfo?.username!, content));
+          dispatch(
+            createChatMessage(
+              user.userInfo?.username!,
+              message.username,
+              JSON.stringify({ send: user.userInfo?.username!, content })
+            )
+          );
           setTimeout(() => {
             dialogRef.current?.scrollTo(0, dialogRef.current?.scrollHeight);
           }, 0);
@@ -71,10 +82,44 @@ function Chatroom() {
     }
   }
 
+  function updateNotification(e: string) {
+    const echoRes = JSON.parse(e);
+    const { chatuser, username, content } = echoRes;
+    const myInfo = {
+      username: user.userInfo?.username,
+      chatuser: message.username,
+    };
+
+    if (myInfo.username === chatuser || myInfo.username === username) {
+      dispatch(updateNotificationAction({ chatuser, content, username }));
+    }
+  }
+
+  function dateFn(currentTime: Date, nextTime?: Date) {
+    if (!nextTime) {
+      return;
+    }
+    const completeDay = dateFormatter.format(new Date(currentTime));
+    const nextDay = dateFormatter.format(new Date(nextTime));
+    if (completeDay !== nextDay) {
+      return (
+        <p className='text-sm m-auto text-gray-100 bg-orange-400 p-1 px-2 rounded-2xl'>
+          {nextDay}
+        </p>
+      );
+    }
+  }
+
   useEffect(() => {
     if (message.chatuser.length > 1) {
       dispatch(getChatroom(message.chatuser));
     }
+
+    socket.on("chatMessage", updateNotification);
+
+    return () => {
+      socket.off("chatMessage", updateNotification);
+    };
   }, []);
 
   useEffect(() => {
@@ -121,11 +166,16 @@ function Chatroom() {
               src='/src/assets/reload.svg'
             />
           )}
-          {message.currentMessage.map((item) => {
+          {message.currentMessage.map((item, index, arr) => {
             return item.username !== message.username ? (
               <div
                 key={`${item._id}`}
                 className='dialog-item dialog-item__myself'>
+                {index === 0 && (
+                  <p className='text-sm m-auto text-gray-100 bg-orange-400 p-1 px-2 rounded-2xl'>
+                    {dateFormatter.format(new Date(item.timestamp))}
+                  </p>
+                )}
                 <p className={rightChatStyle}>
                   <span className='absolute -left-8 bottom-1 text-xs text-gray-500'>
                     {item.upload === 2 && (
@@ -144,8 +194,9 @@ function Chatroom() {
                       formatter.format(new Date(item.timestamp))
                     )}
                   </span>
-                  {item.content}
+                  {JSON.parse(item.content).content}
                 </p>
+                {dateFn(item.timestamp, arr[index + 1]?.timestamp)}
               </div>
             ) : (
               <div key={item._id} className='dialog-item'>
@@ -154,7 +205,7 @@ function Chatroom() {
                   <span className='absolute -right-8 bottom-1 text-xs text-gray-500'>
                     {formatter.format(new Date(item.timestamp))}
                   </span>
-                  {item.content}
+                  {JSON.parse(item.content).content}
                 </p>
               </div>
             );

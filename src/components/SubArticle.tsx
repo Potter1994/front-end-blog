@@ -4,6 +4,11 @@ import {
   getSubArticles,
   updateSubArticle,
 } from "../redux/reducers/articleSlice";
+import {
+  getChatroom,
+  setCurrentMessage,
+  setUsername,
+} from "../redux/reducers/messageSlice";
 import { selectUser } from "../redux/reducers/userSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 const formatter = new Intl.DateTimeFormat("zh-TW", {
@@ -43,12 +48,24 @@ function SubArticle({ subArticle }: any) {
     dispatch(deleteSubArtice(subId, articleId));
   };
 
+  const handleGetChatroom = async (chatname: string) => {
+    const myName = user.userInfo?.username!;
+
+    if (myName !== chatname) {
+      dispatch(setUsername(chatname));
+      dispatch(setCurrentMessage([]));
+      dispatch(getChatroom([myName, chatname]));
+    }
+  };
+
   return (
     <>
       <div className='article-popup-dialog'>
         <div className='article-popup-dialog__item'>
           <div className='article-popup-dialog__userinfo'>
-            <p className='article-popup-dialog__name'>
+            <p
+              className='article-popup-dialog__name truncate cursor-pointer'
+              onClick={() => handleGetChatroom(subArticle?.user?.username)}>
               {subArticle?.user?.username}
             </p>
             <p className='article-popup-dialog__date'>
