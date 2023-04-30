@@ -40,7 +40,6 @@ function ArticlePopup() {
   const [isUpdate, setIsUpdate] = useState(false);
   const id = location.pathname.replace("/article/", "");
   const urlArticleId = Number(location.pathname.replace("/article/", ""));
-  console.log(urlArticleId);
   const currentArticle = article.articles.find(
     (i) => i.articleId === urlArticleId
   );
