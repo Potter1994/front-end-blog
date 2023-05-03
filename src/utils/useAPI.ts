@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'https://potterpan.com';
+const baseURL = 'http://localhost:3000';
 
 export const axiosWithUserToken = axios.create({
   baseURL

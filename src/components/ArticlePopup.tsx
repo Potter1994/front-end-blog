@@ -104,6 +104,7 @@ function ArticlePopup() {
 
   useEffect(() => {
     dispatch(getSubArticles(id));
+    console.log(user);
   }, []);
 
   return (
@@ -211,15 +212,23 @@ function ArticlePopup() {
               {currentArticle?.comment || 0}
             </p>
           </div>
-          <div className='article-popup-message'>
-            <textarea
-              className='article-popup-message__textarea'
-              placeholder='Leave Message ...'
-              ref={subTextRef}></textarea>
-            <button className='button' onClick={leaveMessage}>
-              留言
-            </button>
-          </div>
+          {user.userIsLogin ? (
+            <div className='article-popup-message'>
+              <textarea
+                className='article-popup-message__textarea'
+                placeholder='Leave Message ...'
+                ref={subTextRef}></textarea>
+              <button className='button' onClick={leaveMessage}>
+                留言
+              </button>
+            </div>
+          ) : (
+            <p
+              onClick={() => navigate("/login")}
+              className='button cursor-pointer w-1/2 mx-auto text-center my-3'>
+              登入留言
+            </p>
+          )}
           {subArticleArray.length > 0 && (
             <div className='article-popup-dialog'>
               {subArticleArray.map((subArticle) => (

@@ -3,8 +3,12 @@ import { NavLink } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { selectUser, logoutUser } from "../redux/reducers/userSlice";
 import { setIsOpen } from "../redux/reducers/notificationSlice";
-import { getNotificationAction } from "../redux/sagas/action";
+import {
+  getNotificationAction,
+  updateNotificationAction,
+} from "../redux/sagas/action";
 import NotificationList from "./NotificationList";
+import { socket } from "../socket";
 
 function Header() {
   const user = useAppSelector(selectUser);
@@ -16,9 +20,28 @@ function Header() {
     dispatch(logoutUser());
   };
 
+  function updateNotification(e: string) {
+    const echoRes = JSON.parse(e);
+    console.log(echoRes);
+    const { chatuser, username, content } = echoRes;
+    const myInfo = {
+      username: user.userInfo?.username,
+    };
+
+    if (myInfo.username === chatuser || myInfo.username === username) {
+      console.log("hhsss");
+      dispatch(updateNotificationAction({ chatuser, content, username }));
+    }
+  }
+
   useEffect(() => {
     dispatch(getNotificationAction());
-  }, []);
+    socket.on("chatMessage", updateNotification);
+
+    return () => {
+      socket.off("chatMessage", updateNotification);
+    };
+  }, [user.userIsLogin]);
 
   const guestHeader = (
     <nav className='header-right'>

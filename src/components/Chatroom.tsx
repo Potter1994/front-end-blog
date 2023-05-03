@@ -82,18 +82,18 @@ function Chatroom() {
     }
   }
 
-  function updateNotification(e: string) {
-    const echoRes = JSON.parse(e);
-    const { chatuser, username, content } = echoRes;
-    const myInfo = {
-      username: user.userInfo?.username,
-      chatuser: message.username,
-    };
+  // function updateNotification(e: string) {
+  //   const echoRes = JSON.parse(e);
+  //   const { chatuser, username, content } = echoRes;
+  //   const myInfo = {
+  //     username: user.userInfo?.username,
+  //     chatuser: message.username,
+  //   };
 
-    if (myInfo.username === chatuser || myInfo.username === username) {
-      dispatch(updateNotificationAction({ chatuser, content, username }));
-    }
-  }
+  //   if (myInfo.username === chatuser || myInfo.username === username) {
+  //     dispatch(updateNotificationAction({ chatuser, content, username }));
+  //   }
+  // }
 
   function dateFn(currentTime: Date, nextTime?: Date) {
     if (!nextTime) {
@@ -115,11 +115,11 @@ function Chatroom() {
       dispatch(getChatroom(message.chatuser));
     }
 
-    socket.on("chatMessage", updateNotification);
+    // socket.on("chatMessage", updateNotification);
 
-    return () => {
-      socket.off("chatMessage", updateNotification);
-    };
+    // return () => {
+    //   socket.off("chatMessage", updateNotification);
+    // };
   }, []);
 
   useEffect(() => {
